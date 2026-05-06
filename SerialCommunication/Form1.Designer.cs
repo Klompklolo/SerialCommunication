@@ -90,6 +90,7 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.serialPortArduino = new System.IO.Ports.SerialPort(this.components);
+            this.timerOefening5 = new System.Windows.Forms.Timer(this.components);
             this.tabControl.SuspendLayout();
             this.tabPageInstellingen.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -117,7 +118,7 @@
             this.radioButtonVerbonden.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.radioButtonVerbonden.AutoCheck = false;
             this.radioButtonVerbonden.AutoSize = true;
-            this.radioButtonVerbonden.Location = new System.Drawing.Point(968, 17);
+            this.radioButtonVerbonden.Location = new System.Drawing.Point(940, 21);
             this.radioButtonVerbonden.Margin = new System.Windows.Forms.Padding(4);
             this.radioButtonVerbonden.Name = "radioButtonVerbonden";
             this.radioButtonVerbonden.Size = new System.Drawing.Size(93, 20);
@@ -173,8 +174,9 @@
             this.tabControl.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1045, 513);
+            this.tabControl.Size = new System.Drawing.Size(1036, 489);
             this.tabControl.TabIndex = 9;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged_1);
             // 
             // tabPageInstellingen
             // 
@@ -194,7 +196,7 @@
             this.tabPageInstellingen.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageInstellingen.Name = "tabPageInstellingen";
             this.tabPageInstellingen.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageInstellingen.Size = new System.Drawing.Size(1037, 484);
+            this.tabPageInstellingen.Size = new System.Drawing.Size(1028, 460);
             this.tabPageInstellingen.TabIndex = 2;
             this.tabPageInstellingen.Text = "Instellingen";
             this.tabPageInstellingen.UseVisualStyleBackColor = true;
@@ -533,7 +535,7 @@
             this.tabPageOefening1.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageOefening1.Name = "tabPageOefening1";
             this.tabPageOefening1.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageOefening1.Size = new System.Drawing.Size(1037, 484);
+            this.tabPageOefening1.Size = new System.Drawing.Size(1028, 460);
             this.tabPageOefening1.TabIndex = 0;
             this.tabPageOefening1.Text = "Oefening 1";
             this.tabPageOefening1.UseVisualStyleBackColor = true;
@@ -595,7 +597,7 @@
             this.tabPageOefening2.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageOefening2.Name = "tabPageOefening2";
             this.tabPageOefening2.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageOefening2.Size = new System.Drawing.Size(1037, 484);
+            this.tabPageOefening2.Size = new System.Drawing.Size(1028, 460);
             this.tabPageOefening2.TabIndex = 1;
             this.tabPageOefening2.Text = "Oefening 2";
             this.tabPageOefening2.UseVisualStyleBackColor = true;
@@ -684,7 +686,7 @@
             this.tabPageOefening3.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageOefening3.Name = "tabPageOefening3";
             this.tabPageOefening3.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageOefening3.Size = new System.Drawing.Size(1037, 484);
+            this.tabPageOefening3.Size = new System.Drawing.Size(1028, 460);
             this.tabPageOefening3.TabIndex = 3;
             this.tabPageOefening3.Text = "Oefening 3";
             this.tabPageOefening3.UseVisualStyleBackColor = true;
@@ -747,7 +749,7 @@
             this.tabPageOefening4.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageOefening4.Name = "tabPageOefening4";
             this.tabPageOefening4.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageOefening4.Size = new System.Drawing.Size(1037, 484);
+            this.tabPageOefening4.Size = new System.Drawing.Size(1028, 460);
             this.tabPageOefening4.TabIndex = 4;
             this.tabPageOefening4.Text = "Oefening 4";
             this.tabPageOefening4.UseVisualStyleBackColor = true;
@@ -785,7 +787,7 @@
             this.tabPageOefening5.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageOefening5.Name = "tabPageOefening5";
             this.tabPageOefening5.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageOefening5.Size = new System.Drawing.Size(1037, 484);
+            this.tabPageOefening5.Size = new System.Drawing.Size(1028, 460);
             this.tabPageOefening5.TabIndex = 5;
             this.tabPageOefening5.Text = "Oefening 5";
             this.tabPageOefening5.UseVisualStyleBackColor = true;
@@ -850,10 +852,10 @@
             this.statusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus});
-            this.statusStrip.Location = new System.Drawing.Point(0, 585);
+            this.statusStrip.Location = new System.Drawing.Point(0, 465);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1077, 24);
+            this.statusStrip.Size = new System.Drawing.Size(861, 22);
             this.statusStrip.TabIndex = 10;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -862,11 +864,16 @@
             this.labelStatus.Name = "labelStatus";
             this.labelStatus.Size = new System.Drawing.Size(0, 16);
             // 
+            // timerOefening5
+            // 
+            this.timerOefening5.Interval = 1000;
+            this.timerOefening5.Tick += new System.EventHandler(this.timerOefening5_Tick_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1077, 609);
+            this.ClientSize = new System.Drawing.Size(861, 487);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.radioButtonVerbonden);
@@ -974,6 +981,7 @@
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel labelStatus;
         private System.IO.Ports.SerialPort serialPortArduino;
+        private System.Windows.Forms.Timer timerOefening5;
     }
 }
 

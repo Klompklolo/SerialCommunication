@@ -5,10 +5,12 @@ using System.Data;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace SerialCommunication
 {
@@ -18,6 +20,8 @@ namespace SerialCommunication
         {
             InitializeComponent();
         }
+        decimal temperatuur = 0;
+        decimal temperatuur2 = 0;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -116,6 +120,124 @@ namespace SerialCommunication
                 radioButtonVerbonden.Checked = false;
                 buttonConnect.Text = "Connect";
             }
+
+        }
+
+        private void timerOefening5_Tick_1(object sender, EventArgs e)
+        {
+            try
+            {
+                string command;
+                if (serialPortArduino != null && serialPortArduino.IsOpen)
+                {
+                    
+                    int analogvalue0 = LeesAnalogePin0(serialPortArduino);
+                    int analogvalue1 = LeesAnalogePin1(serialPortArduino);
+                    Decimal a = 40m / 1023m;
+
+                    if (analogvalue0 != -1)
+                    {
+                        temperatuur = (analogvalue0 * a) + 5;
+                        labelGewensteTemp.Text = Math.Round(temperatuur, 1) + " °C";
+                    }
+                    if (analogvalue1 != -1)
+                    {
+                        temperatuur2 = (analogvalue1 * a) + 5;
+                        labelHuidigeTemp.Text = Math.Round(temperatuur2, 1) + " °C";
+                    }
+                    if (temperatuur>= temperatuur2)
+                    {
+                        command = "set d2 high";
+                    }
+                    else
+                    {
+                        command = "set d2 low";
+                    }
+                    serialPortArduino.WriteLine(command);
+                }
+            }
+            catch (Exception exception)
+            {
+                labelStatus.Text = "error:" + exception.Message;
+            }
+        }
+
+        private void tabControl_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            string command;
+            try
+            {
+                if (tabControl.SelectedTab == tabPageOefening5 && serialPortArduino.IsOpen)
+                {
+                    timerOefening5.Start();
+
+                }
+                else
+                {
+                    timerOefening5.Stop();
+                    command = "set d2 low";
+                    serialPortArduino.WriteLine(command);
+
+                }
+            }
+            catch (Exception exception)
+            {
+                labelStatus.Text = "error:" + exception.Message;
+            }
+        }
+        private int LeesAnalogePin0(SerialPort serialPort)
+        {
+            try
+            {
+                if (serialPort != null && serialPort.IsOpen)
+                {
+                    serialPort.WriteLine("get a0");
+
+                    string response = serialPort.ReadLine().Trim();
+
+                    if (response.StartsWith("a0:"))
+                    {
+                        string waardeString = response.Split(':')[1].Trim();
+
+                        if (int.TryParse(waardeString, out int waarde))
+                        {
+                            return waarde;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return -1;
+        }
+        private int LeesAnalogePin1(SerialPort serialPort)
+        {
+            try
+            {
+                if (serialPort != null && serialPort.IsOpen)
+                {
+                    serialPort.WriteLine("get a1");
+
+                    string response = serialPort.ReadLine().Trim();
+
+                    if (response.StartsWith("a1:"))
+                    {
+                        string waardeString = response.Split(':')[1].Trim();
+
+                        if (int.TryParse(waardeString, out int waarde))
+                        {
+                            return waarde;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return -1;
         }
     }
 }
