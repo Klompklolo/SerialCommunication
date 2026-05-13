@@ -97,5 +97,8 @@
   <ItemGroup>
     <None Include="Resources\thermostat.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\temperatuuralarm.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

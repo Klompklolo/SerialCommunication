@@ -193,6 +193,114 @@ namespace SerialCommunication
             }
 
         }
+        int toestand = 0;
+        private void timerTemperatuurAlarm_Tick(object sender, EventArgs e)
+        {
+            if (serialPortArduino.IsOpen)
+            {
+                try
+                {
+                    serialPortArduino.ReadExisting();
+
+                    // Lees Potmeter (Alarm waarde)
+                    serialPortArduino.WriteLine("get a0");
+                    int rawA1 = Int32.Parse(serialPortArduino.ReadLine().TrimEnd().Substring(4));
+                    double alarmTemp = (0.0684 * rawA1) - 10;
+
+                    // Lees LM35 (Huidige temperatuur)
+                    serialPortArduino.WriteLine("get a1");
+                    int rawA0 = Int32.Parse(serialPortArduino.ReadLine().TrimEnd().Substring(4));
+                    double huidigeTemp = 0.4887 * rawA0;
+
+                    // Lees Drukknop
+                    serialPortArduino.WriteLine("get d5");
+                    string knopStatus = serialPortArduino.ReadLine().TrimEnd().Substring(4);
+                    bool knopIngedrukt = (knopStatus == "1");
+
+                    // --- 4. VISUALISATIE IN UI ---
+                    labelAlarmTemp.Text = alarmTemp.ToString("0.0") + " °C";
+                    labelHuidigeTemp6.Text = huidigeTemp.ToString("0.0") + " °C";
+                    labelToestand.Text = knopStatus.ToString();
+
+                    // --- TOESTANDSLOGICA ---
+                    if (toestand == 0) // OK
+                    {
+                        if (huidigeTemp >= alarmTemp)
+                        {
+                            toestand = 1; // Naar ALARM
+                        }
+                    }
+                    else if (toestand == 1) // ALARM
+                    {
+                        if (knopIngedrukt)
+                        {
+                            if (huidigeTemp < alarmTemp)
+                            {
+                                toestand = 0; // Naar OK
+                            }
+                            else
+                            {
+                                toestand = 2; // Naar BEVESTIGD
+                            }
+                        }
+                    }
+                    else if (toestand == 2) // BEVESTIGD
+                    {
+                        if (huidigeTemp < alarmTemp)
+                        {
+                            toestand = 0; // Naar OK
+                        }
+                    }
+
+                    // --- OUTPUT: LABEL & HARDWARE ---
+                    switch (toestand)
+                    {
+                        case 0: // OK
+                            labelToestand.Text = "OK";
+                            serialPortArduino.WriteLine("set d2 low");
+                            serialPortArduino.WriteLine("set d3 low");
+                            break;
+
+                        case 1: // ALARM
+                            labelToestand.Text = "ALARM";
+                            serialPortArduino.WriteLine("set d2 high");
+                            serialPortArduino.WriteLine("set d3 high");
+                            break;
+
+                        case 2: // BEVESTIGD
+                            labelToestand.Text = "BEVESTIGD";
+                            serialPortArduino.WriteLine("set d2 high");
+                            serialPortArduino.WriteLine("set d3 low");
+                            break;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    // Als de kabel wordt uitgetrokken, komt de code hier terecht
+                    timerTemperatuurAlarm.Stop(); // Stop de timer om verdere errors te voorkomen
+
+                    if (serialPortArduino.IsOpen)
+                    {
+                        labelStatus.Text = "connected";
+                    }
+                    else
+                    {
+                        
+                        labelStatus.Text = "Disconnected";
+                        radioButtonVerbonden.Checked = false;
+                        buttonConnect.Text = "Disconnected";
+                    }
+                }
+            }
+            else
+            {
+                labelStatus.Text = "Disconnected";
+                radioButtonVerbonden.Checked = false;
+                buttonConnect.Text = "Disconnected";
+            }
+        }
+    
     }
+    
        
 }
