@@ -128,7 +128,7 @@ namespace SerialCommunication
             try
 
             {
-                if (serialPortArduino.IsOpen)
+               
 
                 {
 
