@@ -176,7 +176,6 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(1036, 489);
             this.tabControl.TabIndex = 9;
-            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged_1);
             // 
             // tabPageInstellingen
             // 
@@ -866,6 +865,7 @@
             // 
             // timerOefening5
             // 
+            this.timerOefening5.Enabled = true;
             this.timerOefening5.Interval = 1000;
             this.timerOefening5.Tick += new System.EventHandler(this.timerOefening5_Tick_1);
             // 

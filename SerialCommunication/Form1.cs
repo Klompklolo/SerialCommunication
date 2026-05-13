@@ -126,118 +126,73 @@ namespace SerialCommunication
         private void timerOefening5_Tick_1(object sender, EventArgs e)
         {
             try
-            {
-                string command;
-                if (serialPortArduino != null && serialPortArduino.IsOpen)
-                {
-                    
-                    int analogvalue0 = LeesAnalogePin0(serialPortArduino);
-                    int analogvalue1 = LeesAnalogePin1(serialPortArduino);
-                    Decimal a = 40m / 1023m;
 
-                    if (analogvalue0 != -1)
+            {
+                if (serialPortArduino.IsOpen)
+
+                {
+
+                    serialPortArduino.ReadExisting();
+
+                    serialPortArduino.WriteLine("get a0");
+
+                    string antwoordA0 = serialPortArduino.ReadLine().TrimEnd().Substring(4);
+
+                    int rawA0 = Int32.Parse(antwoordA0);
+
+
+
+                    double gewensteTemp = (0.0391 * rawA0) + 5;
+
+                    labelGewensteTemp.Text = gewensteTemp.ToString("0.0") + " °C";
+
+                    serialPortArduino.WriteLine("get a1");
+
+                    string antwoordA1 = serialPortArduino.ReadLine().TrimEnd().Substring(4);
+
+                    int rawA1 = Int32.Parse(antwoordA1);
+
+
+
+                    double huidigeTemp = (0.4887 * rawA1) + 0;
+
+                    labelHuidigeTemp.Text = huidigeTemp.ToString("0.0") + " °C";
+
+
+
+                    string ledCommando;
+
+                    if (huidigeTemp < gewensteTemp)
+
                     {
-                        temperatuur = (analogvalue0 * a) + 5;
-                        labelGewensteTemp.Text = Math.Round(temperatuur, 1) + " °C";
+
+                        ledCommando = "set d2 high";
+
                     }
-                    if (analogvalue1 != -1)
-                    {
-                        temperatuur2 = (analogvalue1 * a) + 5;
-                        labelHuidigeTemp.Text = Math.Round(temperatuur2, 1) + " °C";
-                    }
-                    if (temperatuur>= temperatuur2)
-                    {
-                        command = "set d2 high";
-                    }
+
                     else
+
                     {
-                        command = "set d2 low";
+
+                        ledCommando = "set d2 low";
+
                     }
-                    serialPortArduino.WriteLine(command);
+                    serialPortArduino.WriteLine(ledCommando);
                 }
             }
             catch (Exception exception)
             {
-                labelStatus.Text = "error:" + exception.Message;
-            }
-        }
+                labelStatus.Text = "Error: " + exception.Message;
 
-        private void tabControl_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-            string command;
-            try
-            {
-                if (tabControl.SelectedTab == tabPageOefening5 && serialPortArduino.IsOpen)
-                {
-                    timerOefening5.Start();
+                serialPortArduino.Close();
 
-                }
-                else
-                {
-                    timerOefening5.Stop();
-                    command = "set d2 low";
-                    serialPortArduino.WriteLine(command);
+                radioButtonVerbonden.Checked = false;
 
-                }
-            }
-            catch (Exception exception)
-            {
-                labelStatus.Text = "error:" + exception.Message;
-            }
-        }
-        private int LeesAnalogePin0(SerialPort serialPort)
-        {
-            try
-            {
-                if (serialPort != null && serialPort.IsOpen)
-                {
-                    serialPort.WriteLine("get a0");
+                buttonConnect.Text = "Connect";
 
-                    string response = serialPort.ReadLine().Trim();
-
-                    if (response.StartsWith("a0:"))
-                    {
-                        string waardeString = response.Split(':')[1].Trim();
-
-                        if (int.TryParse(waardeString, out int waarde))
-                        {
-                            return waarde;
-                        }
-                    }
-                }
-            }
-            catch
-            {
             }
 
-            return -1;
-        }
-        private int LeesAnalogePin1(SerialPort serialPort)
-        {
-            try
-            {
-                if (serialPort != null && serialPort.IsOpen)
-                {
-                    serialPort.WriteLine("get a1");
-
-                    string response = serialPort.ReadLine().Trim();
-
-                    if (response.StartsWith("a1:"))
-                    {
-                        string waardeString = response.Split(':')[1].Trim();
-
-                        if (int.TryParse(waardeString, out int waarde))
-                        {
-                            return waarde;
-                        }
-                    }
-                }
-            }
-            catch
-            {
-            }
-
-            return -1;
         }
     }
+       
 }
